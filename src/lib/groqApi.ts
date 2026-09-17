@@ -3,7 +3,7 @@ export async function getGroqRecommendations(
   limit: number = 5
 ) {
   const response = await fetch(
-    `http://127.0.0.1:8000/groq/recommendations?mood=${encodeURIComponent(
+    `https://moodmentor-ai.onrender.com/groq/recommendations?mood=${encodeURIComponent(
       mood
     )}&limit=${limit}`
   );
