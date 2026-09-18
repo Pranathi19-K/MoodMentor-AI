@@ -1,21 +1,25 @@
-# from fastapi import APIRouter, HTTPException
 from fastapi import APIRouter, HTTPException, Depends
-from app.schemas.user_schema import UserRegister
+
+from app.schemas.user_schema import UserRegister, UserLogin
 from app.database.connection import db
-from app.utils.security import hash_password
-from app.schemas.user_schema import UserLogin
-from app.utils.security import verify_password
-# from app.auth.jwt_handler import create_access_token
+from app.utils.security import hash_password, verify_password
 from app.auth.jwt_handler import create_access_token, verify_token
+
 router = APIRouter()
 
 users_collection = db["users"]
 
+
+# =========================
+# REGISTER
+# =========================
 @router.post("/register")
 def register(user: UserRegister):
 
     # Check if email already exists
-    existing_user = users_collection.find_one({"email": user.email})
+    existing_user = users_collection.find_one(
+        {"email": user.email}
+    )
 
     if existing_user:
         raise HTTPException(
@@ -33,16 +37,21 @@ def register(user: UserRegister):
         "password": hashed_password
     }
 
-    # Save to MongoDB
+    # Save user to MongoDB
     users_collection.insert_one(new_user)
 
     return {
         "message": "User Registered Successfully"
     }
 
+
+# =========================
+# LOGIN
+# =========================
 @router.post("/login")
 def login(user: UserLogin):
 
+    # Find user by email
     existing_user = users_collection.find_one(
         {"email": user.email}
     )
@@ -53,10 +62,7 @@ def login(user: UserLogin):
             detail="User not found"
         )
 
-    print("Entered Password:", user.password)
-    print("Stored Hash:", existing_user["password"])
-    print("Verify Result:", verify_password(user.password, existing_user["password"]))
-
+    # Verify password
     if not verify_password(
         user.password,
         existing_user["password"]
@@ -66,6 +72,7 @@ def login(user: UserLogin):
             detail="Invalid Password"
         )
 
+    # Create JWT token
     token = create_access_token(
         {"sub": existing_user["email"]}
     )
@@ -75,9 +82,28 @@ def login(user: UserLogin):
         "access_token": token,
         "token_type": "bearer"
     }
+
+
+# =========================
+# PROFILE
+# =========================
 @router.get("/profile")
-def get_profile(current_user: str = Depends(verify_token)):
+def get_profile(
+    current_user: str = Depends(verify_token)
+):
+
+    # current_user is the email from JWT
+    existing_user = users_collection.find_one(
+        {"email": current_user}
+    )
+
+    if not existing_user:
+        raise HTTPException(
+            status_code=404,
+            detail="User not found"
+        )
+
     return {
-        "message": "Protected Route Accessed Successfully",
-        "logged_in_user": current_user
+        "name": existing_user["name"],
+        "email": existing_user["email"]
     }
