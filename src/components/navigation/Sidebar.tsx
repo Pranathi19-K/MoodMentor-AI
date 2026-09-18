@@ -55,35 +55,43 @@ export const Sidebar = () => {
   };
 
   return (
-    <aside className="w-72 bg-black/20 backdrop-blur-3xl border-r border-border-subtle flex flex-col shrink-0">
-      <div className="p-8 flex items-center gap-3">
-        <div className="w-10 h-10 bg-gradient-neon rounded-xl flex items-center justify-center shadow-glow-primary">
+    <aside className="w-16 md:w-72 bg-black/20 backdrop-blur-3xl border-r border-border-subtle flex flex-col shrink-0 transition-all duration-300">
+      {/* Brand Header */}
+      <div className="p-3 md:p-8 flex items-center gap-3 justify-center md:justify-start">
+        <div className="w-10 h-10 bg-gradient-neon rounded-xl flex items-center justify-center shadow-glow-primary shrink-0">
           <Brain className="text-primary-text" size={24} />
         </div>
-        <span className="text-xl font-black tracking-tighter">MOOD MENTOR <span className="text-primary italic">AI</span></span>
+        <span className="hidden md:block text-xl font-black tracking-tighter truncate">
+          MOOD MENTOR <span className="text-primary italic">AI</span>
+        </span>
       </div>
 
-      <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto scrollbar-hide">
+      {/* Navigation List */}
+      <nav className="flex-1 px-2 md:px-4 py-4 md:py-6 space-y-1.5 md:space-y-2 overflow-y-auto scrollbar-hide">
         {navItems.map((item) => (
           <NavLink
             key={item.path}
             to={item.path}
+            title={item.label}
             className={({ isActive }) => cn(
-              "flex items-center gap-4 px-6 py-3.5 rounded-2xl font-bold transition-all duration-300 group",
+              "flex items-center justify-center md:justify-start gap-4 px-2.5 md:px-6 py-3 rounded-2xl font-bold transition-all duration-300 group",
               isActive 
                 ? "bg-primary/10 text-primary shadow-[inset_0_0_20px_rgba(0,217,255,0.05)]" 
                 : "text-muted hover:bg-card hover:text-primary-text"
             )}
           >
             <item.icon size={20} className="shrink-0" />
-            <span className="tracking-tight text-sm">{item.label}</span>
+            <span className="hidden md:block tracking-tight text-sm truncate">{item.label}</span>
           </NavLink>
         ))}
 
-        <div className="pt-6 pb-2 px-6">
+        {/* Section Divider & Heading */}
+        <div className="hidden md:block pt-6 pb-2 px-6">
           <p className="text-[10px] font-black uppercase tracking-widest text-muted/50">Settings & Account</p>
         </div>
+        <div className="md:hidden my-2 border-t border-border-subtle/40" />
 
+        {/* Account Links */}
         {[
           { icon: User, label: 'Profile', path: '/profile' },
           { icon: Settings, label: 'Settings', path: '/settings' },
@@ -91,37 +99,45 @@ export const Sidebar = () => {
           <NavLink
             key={item.path}
             to={item.path}
+            title={item.label}
             className={({ isActive }) => cn(
-              "flex items-center gap-4 px-6 py-3.5 rounded-2xl font-bold transition-all duration-300 group",
+              "flex items-center justify-center md:justify-start gap-4 px-2.5 md:px-6 py-3 rounded-2xl font-bold transition-all duration-300 group",
               isActive 
                 ? "bg-primary/10 text-primary shadow-[inset_0_0_20px_rgba(0,217,255,0.05)]" 
                 : "text-muted hover:bg-card hover:text-primary-text"
             )}
           >
             <item.icon size={20} className="shrink-0" />
-            <span className="tracking-tight text-sm">{item.label}</span>
+            <span className="hidden md:block tracking-tight text-sm truncate">{item.label}</span>
           </NavLink>
         ))}
 
+        {/* Logout Button */}
         <button
           onClick={handleLogout}
-          className="w-full flex items-center gap-4 px-6 py-3.5 rounded-2xl font-bold text-muted hover:bg-red-500/10 hover:text-red-400 transition-all duration-300 group"
+          title="Logout"
+          className="w-full flex items-center justify-center md:justify-start gap-4 px-2.5 md:px-6 py-3 rounded-2xl font-bold text-muted hover:bg-red-500/10 hover:text-red-400 transition-all duration-300 group"
         >
           <LogOut size={20} className="shrink-0" />
-          <span className="tracking-tight text-sm">Logout</span>
+          <span className="hidden md:block tracking-tight text-sm truncate">Logout</span>
         </button>
       </nav>
 
-      <div className="p-6 mt-auto border-t border-border-subtle bg-white/2 space-y-4">
-        <NavLink to="/profile" className="flex items-center gap-3 p-3 bg-card rounded-2xl border border-border group cursor-pointer hover:bg-primary-text/10 transition-all">
-          <div className="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center shadow-glow-primary group-hover:scale-110 transition-transform overflow-hidden p-0.5">
+      {/* Profile Card Footer */}
+      <div className="p-2 md:p-6 mt-auto border-t border-border-subtle bg-white/2 space-y-4">
+        <NavLink 
+          to="/profile" 
+          title={userData.profile.name}
+          className="flex items-center justify-center md:justify-start gap-3 p-1.5 md:p-3 bg-card rounded-2xl border border-border group cursor-pointer hover:bg-primary-text/10 transition-all"
+        >
+          <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center shadow-glow-primary group-hover:scale-110 transition-transform overflow-hidden p-0.5 shrink-0">
             <div className="w-full h-full bg-background rounded-[10px] overflow-hidden">
               <AvatarImage src={avatarData.image} alt={avatarData.name} className="w-full h-full object-cover" />
             </div>
           </div>
-          <div className="flex-1 min-w-0">
+          <div className="hidden md:block flex-1 min-w-0">
             <p className="text-sm font-black tracking-tight truncate">{userData.profile.name}</p>
-            <p className="text-[10px] font-bold text-primary uppercase tracking-tighter italic">Wellness Member</p>
+            <p className="text-[10px] font-bold text-primary uppercase tracking-tighter italic truncate">Wellness Member</p>
           </div>
         </NavLink>
       </div>
